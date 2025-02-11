@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Analysis</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #4CAF50;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 16px;
+            text-align: left;
+            margin-bottom: 30px;
+            color: #666;
+        }
+
+        .top-right-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            margin-left: 10px;
+            font-size: 14px;
+            color: white;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #45A049;
+        }
+
+        .biomarker {
+            margin-bottom: 30px;
+        }
+
+        .biomarker h2 {
+            font-size: 18px;
+            color: #333;
+            margin: 0;
+            text-align: left;
+        }
+
+        .bar-container {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .bar {
+            height: 20px;
+            width: 100%;
+            background: linear-gradient(to right, #FF0000, #FFD700, #32CD32, #006400);
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .marker-value {
+            position: absolute;
+            height: 20px;
+            background-color: #4CAF50;
+            border-radius: 5px;
+            transition: width 0.3s ease;
+        }
+
+        .description {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+            text-align: left;
+        }
+
+        .collapse {
+            cursor: pointer;
+            background-color: #f1f1f1;
+            padding: 10px;
+            border: none;
+            text-align: left;
+            font-size: 14px;
+            width: 100%;
+            outline: none;
+            border-radius: 8px;
+        }
+
+        .collapse:after {
+            content: '\002B'; /* Plus sign */
+            float: right;
+            font-size: 18px;
+        }
+
+        .collapse.active:after {
+            content: '\2212'; /* Minus sign */
+        }
+
+        .collapse-panel {
+            padding: 0 18px;
+            display: none;
+            background-color: #f9f9f9;
+            overflow: hidden;
+            border-left: 4px solid #4CAF50;
+            border-radius: 8px;
+        }
+
+        .collapse-panel p {
+            font-size: 14px;
+            color: #444;
+        }
+
+        .footer {
+            background-color: #333;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer p {
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        
+        .sample-data-alert {
+            background-color: #FFD700;
+            padding: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Top Right Buttons -->
+        <div class="top-right-buttons">
+            <button class="btn" onclick="shareReport()">Share</button>
+            <button class="btn" onclick="uploadNewReport()">+ Report</button>
+        </div>
+
+        <h1>Your Results</h1>
+        <p>Our analysis compares your blood test results to both standard medical ranges and "optimal" ranges. These optimal ranges are broader and focus on overall wellness rather than merely avoiding illness. You can explore the details of each marker and what different medical perspectives say about them.</p>
+
+        <!-- Sample data alert -->
+        <div id="sample-data-alert" class="sample-data-alert">
+            This is sample data. To view your own results, please upload your lab test.
+        </div>
+
+        <!-- Biomarker Section (Dynamically generated for each marker) -->
+        <div id="biomarker-section"></div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>Company Information | Address | Contact</p>
+        <a href="#">Upload a Test</a> | 
+        <a href="#">My Results</a> | 
+        <a href="#">Privacy Policy</a> | 
+        <a href="#">Terms of Service</a> | 
+        <a href="#">About Us</a> | 
+        <a href="#">Work With Us</a>
+    </div>
+
+    <script>
+        // Simulated DynamoDB data for the biomarkers
+        let biomarkers = []; // If there is no data, sampleData will be used
+
+        // Example sample data in case of no biomarkers from DynamoDB
+        const sampleData = [
+            {
+                commonName: 'Vitamin D',
+                medicalName: '25-hydroxyvitamin D',
+                standardRange: { min: 30, max: 100 },
+                optimalRange: { min: 50, max: 80 },
+                userValue: 55,
+                description: 'Vitamin D is essential for bone health and immune function.',
+                detailedInfo: 'Vitamin D plays a crucial role in bone health, immune function, and overall well-being. Low vitamin D can lead to deficiency issues such as weakened bones and weakened immunity. Excessive vitamin D can lead to toxicity.'
+            },
+            {
+                commonName: 'Cholesterol',
+                medicalName: 'Total Cholesterol',
+                standardRange: { min: 125, max: 200 },
+                optimalRange: { min: 150, max: 180 },
+                userValue: 220,
+                description: 'Cholesterol is vital for cell membrane structure and hormone production.',
+                detailedInfo: 'Elevated cholesterol levels can increase the risk of heart disease and stroke. Too low cholesterol may also cause health issues.'
+            }
+        ];
+
+        // Function to create the biomarker elements dynamically
+        function createBiomarkerElement(biomarker) {
+            const biomarkerDiv = document.createElement('div');
+            biomarkerDiv.classList.add('biomarker');
+
+            // Heading for the biomarker
+            const biomarkerHeading = document.createElement('h2');
+            biomarkerHeading.textContent = `${biomarker.commonName} (${biomarker.medicalName})`;
+            biomarkerDiv.appendChild(biomarkerHeading);
+
+            // Bar chart
+            const barContainer = document.createElement('div');
+            barContainer.classList.add('bar-container');
+
+            const bar = document.createElement('div');
+            bar.classList.add('bar');
+
+            // User result position
+            const markerValue = document.createElement('div');
+            markerValue.classList.add('marker-value');
+            const userValuePercentage = ((biomarker.userValue - biomarker.standardRange.min) / (biomarker.standardRange.max - biomarker.standardRange.min)) * 100;
+            markerValue.style.width = `${userValuePercentage}%`;
+
+            bar.appendChild(markerValue);
+            barContainer.appendChild(bar);
+            biomarkerDiv.appendChild(barContainer);
+
+            // Description
+            const description = document.createElement('div');
+            description.classList.add('description');
+            description.textContent = biomarker.description;
+            biomarkerDiv.appendChild(description);
+
+            // Collapsible details
+            const collapseButton = document.createElement('button');
+            collapseButton.classList.add('collapse');
+            collapseButton.textContent = 'Learn more about ' + biomarker.commonName;
+            biomarkerDiv.appendChild(collapseButton);
+
+            const collapsePanel = document.createElement('div');
+            collapsePanel.classList.add('collapse-panel');
+            const detailedInfo = document.createElement('p');
+            detailedInfo.textContent = biomarker.detailedInfo;
+            collapsePanel.appendChild(detailedInfo);
+            biomarkerDiv.appendChild(collapsePanel);
+
+            collapseButton.addEventListener('click', function () {
+                collapseButton.classList.toggle('active');
+                if (collapsePanel.style.display === 'block') {
+                    collapsePanel.style.display = 'none';
+                } else {
+                    collapsePanel.style.display = 'block';
+                }
+            });
+
+            return biomarkerDiv;
+        }
+
+       
