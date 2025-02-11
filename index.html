@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Test Analysis App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        header {
+            background-color: #ff6f61;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 32px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 18px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .upload-section, .info-section, .focus-section, .email-section {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .upload-section.active, .info-section.active, .focus-section.active, .email-section.active {
+            display: block;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            color: white;
+            background-color: #ff6f61;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .btn:hover {
+            background-color: #ff4f41;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .footer a {
+            color: #ff6f61;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <header>Blood Test Analysis App</header>
+
+    <div class="container">
+        <h1>Analyse Your Blood Test in Minutes</h1>
+        <p>Upload your results and get a detailed, easy-to-understand report. Simply follow the steps below to get started!</p>
+
+        <!-- Step 1: Upload Lab Test File -->
+        <div class="upload-section active" id="upload-section">
+            <h2>Step 1: Upload Your Blood Test Results</h2>
+            <p>Select a file (PDF, CSV, or Excel) to upload:</p>
+            <input type="file" id="file-upload" accept=".pdf,.csv,.xlsx" style="margin-bottom: 20px;">
+            <button class="btn" onclick="showInfoSection()">Upload and Continue</button>
+        </div>
+
+        <!-- Step 2: Personal Information -->
+        <div class="info-section" id="info-section">
+            <h2>Step 2: Tell Us About Yourself</h2>
+            <p>We need a few more details to provide accurate results.</p>
+
+            <label for="dob">Date of Birth</label>
+            <input type="date" id="dob" required>
+
+            <label for="gender">Gender Assigned at Birth</label>
+            <select id="gender" required>
+                <option value="" disabled selected>Select your gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+            </select>
+
+            <label for="ethnicity">Ethnicity</label>
+            <select id="ethnicity" multiple required>
+                <option value="" disabled>Select your ethnicity</option>
+                <option value="asian">Asian</option>
+                <option value="black">Black or African</option>
+                <option value="hispanic">Hispanic or Latino</option>
+                <option value="white">White</option>
+                <option value="indigenous">Indigenous</option>
+                <option value="middle-eastern">Middle Eastern</option>
+                <option value="native-american">Native American</option>
+                <option value="pacific-islander">Pacific Islander</option>
+                <option value="south-asian">South Asian</option>
+                <option value="east-asian">East Asian</option>
+                <option value="southeast-asian">Southeast Asian</option>
+                <option value="other">Other</option>
+            </select>
+
+            <div class="error" id="ethnicityError"></div>
+            <button class="btn" onclick="showFocusSection()">Continue</button>
+        </div>
+
+        <!-- Optional Step: Health Focus -->
+        <div class="focus-section" id="focus-section">
+            <h2>Step 3: What’s Your Health Focus?</h2>
+            <p>This helps us tailor the analysis to your specific goals (optional).</p>
+
+            <label for="focus">Health Focus</label>
+            <select id="focus" multiple>
+                <option value="" disabled>Select your health focus</option>
+                <option value="general-health">General Health</option>
+                <option value="pregnancy">Pregnancy</option>
+                <option value="acne">Acne</option>
+                <option value="skin-health">Skin Health</option>
+                <option value="metabolic-health">Metabolic Health</option>
+                <option value="weight-management">Weight Management</option>
+                <option value="bone-health">Bone Health</option>
+                <option value="longevity">Longevity</option>
+                <option value="performance">Performance</option>
+                <option value="mental-health">Mental Health</option>
+                <option value="hormonal-balance">Hormonal Balance</option>
+                <option value="energy-levels">Energy Levels</option>
+            </select>
+            <button class="btn" onclick="showEmailSection()">Continue</button>
+        </div>
+
+        <!-- Step 4: Email for Account Creation -->
+        <div class="email-section" id="email-section">
+            <h2>Step 4: Create Your Account</h2>
+            <p>Enter your email to create your free account and get your analysis report:</p>
+            <input type="email" id="email-input" placeholder="Your email address" required>
+            <button class="btn" onclick="submitForm()">Submit and Get Results</button>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <p>By proceeding, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</p>
+    </div>
+
+    <script>
+        // Function to show the info section after file upload
+        function showInfoSection() {
+            var fileUpload = document.getElementById("file-upload");
+            if (fileUpload.files.length === 0) {
+                alert("Please upload a file.");
+                return;
+            }
+            document.getElementById("upload-section").classList.remove("active");
+            document.getElementById("info-section").classList.add("active");
+        }
+
+        // Function to show the health focus section after personal info
+        function showFocusSection() {
+            var dob = document.getElementById("dob").value;
+            var gender = document.getElementById("gender").value;
+            var ethnicity = document.getElementById("ethnicity");
+
+            // Check if at least one ethnicity option is selected
+            if (!dob || !gender || ethnicity.selectedOptions.length === 0) {
+                alert("Please fill in all required fields and select at least one ethnicity.");
+                return;
+            }
+
+            document.getElementById("info-section").classList.remove("active");
+            document.getElementById("focus-section").classList.add("active");
+        }
+
+        // Function to show the email input section after health focus
+        function showEmailSection() {
+            document.getElementById("focus-section").classList.remove("active");
+            document.getElementById("email-section").classList.add("active");
+        }
+
+        // Function to simulate form submission
+        function submitForm() {
+            var email = document.getElementById("email-input").value;
+            if (!email) {
+                alert("Please enter a valid email.");
+                return;
+            }
+            alert("Thank you! Your analysis is being processed. In the meantime, please confirm your email address.");
+            // Here you would handle the file upload, personal info, health focus, and email processing logic
+        }
+    </script>
+
+</body>
+</html>
